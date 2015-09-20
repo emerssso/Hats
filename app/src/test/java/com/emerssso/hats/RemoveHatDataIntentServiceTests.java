@@ -2,6 +2,8 @@ package com.emerssso.hats;
 
 import android.content.Intent;
 
+import com.emerssso.hats.realm.RealmWrapper;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -19,7 +21,8 @@ public class RemoveHatDataIntentServiceTests {
 
     public static final String HAT_NAME = "test";
     RemoveHatDataIntentService sut;
-    @Mock RealmWrapper wrapper;
+    @Mock
+    RealmWrapper wrapper;
 
     @Before public void setUp() {
         initMocks(this);

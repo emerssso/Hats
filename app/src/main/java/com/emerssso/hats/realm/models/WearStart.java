@@ -1,4 +1,4 @@
-package com.emerssso.hats.models;
+package com.emerssso.hats.realm.models;
 
 import java.util.Date;
 
@@ -16,6 +16,7 @@ public class WearStart extends RealmObject {
     private Hat hat;
     private Date start;
 
+    //Needed for Realm. do not remove
     public WearStart() {
     }
 

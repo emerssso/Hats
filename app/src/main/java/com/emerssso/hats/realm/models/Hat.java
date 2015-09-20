@@ -1,4 +1,4 @@
-package com.emerssso.hats.models;
+package com.emerssso.hats.realm.models;
 
 import android.support.annotation.NonNull;
 
@@ -14,6 +14,7 @@ public class Hat extends RealmObject {
 
     @NonNull @PrimaryKey private String name;
 
+    //Needed for Realm. Do not remove
     public Hat() {
         name = NO_HAT_NAME;
     }

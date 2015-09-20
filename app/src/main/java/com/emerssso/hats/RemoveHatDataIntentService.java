@@ -2,6 +2,8 @@ package com.emerssso.hats;
 
 import android.content.Intent;
 
+import com.emerssso.hats.realm.RealmIntentService;
+
 import static com.emerssso.hats.HatsIntents.EXTRA_HAT_NAME;
 
 /**

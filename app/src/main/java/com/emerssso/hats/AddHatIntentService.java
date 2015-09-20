@@ -2,7 +2,8 @@ package com.emerssso.hats;
 
 import android.content.Intent;
 
-import com.emerssso.hats.models.Hat;
+import com.emerssso.hats.realm.models.Hat;
+import com.emerssso.hats.realm.RealmIntentService;
 
 import org.apache.commons.lang3.StringUtils;
 

@@ -1,10 +1,10 @@
-package com.emerssso.hats;
+package com.emerssso.hats.realm;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import com.emerssso.hats.models.Hat;
-import com.emerssso.hats.models.WearStart;
+import com.emerssso.hats.realm.models.Hat;
+import com.emerssso.hats.realm.models.WearStart;
 
 import java.io.Closeable;
 

@@ -2,8 +2,9 @@ package com.emerssso.hats;
 
 import android.content.Intent;
 
-import com.emerssso.hats.models.Hat;
-import com.emerssso.hats.models.WearStart;
+import com.emerssso.hats.realm.models.Hat;
+import com.emerssso.hats.realm.models.WearStart;
+import com.emerssso.hats.realm.RealmIntentService;
 
 import java.util.Date;
 

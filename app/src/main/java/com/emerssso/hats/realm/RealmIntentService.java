@@ -1,4 +1,4 @@
-package com.emerssso.hats;
+package com.emerssso.hats.realm;
 
 import android.app.IntentService;
 
@@ -28,7 +28,7 @@ public abstract class RealmIntentService extends IntentService {
         return wrapper;
     }
 
-    protected void setWrapper(RealmWrapper realmWrapper) {
+    public void setWrapper(RealmWrapper realmWrapper) {
         wrapper = realmWrapper;
     }
 }

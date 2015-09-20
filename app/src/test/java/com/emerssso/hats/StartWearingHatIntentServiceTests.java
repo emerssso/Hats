@@ -2,8 +2,9 @@ package com.emerssso.hats;
 
 import android.content.Intent;
 
-import com.emerssso.hats.models.Hat;
-import com.emerssso.hats.models.WearStart;
+import com.emerssso.hats.realm.models.Hat;
+import com.emerssso.hats.realm.models.WearStart;
+import com.emerssso.hats.realm.RealmWrapper;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -26,7 +27,8 @@ public class StartWearingHatIntentServiceTests {
     public static final long START_MILLIS = 1442780440545L;
     public static final String HAT_NAME = "test";
     StartWearingHatIntentService sut;
-    @Mock RealmWrapper wrapper;
+    @Mock
+    RealmWrapper wrapper;
     @Captor ArgumentCaptor<WearStart> startCaptor;
     Hat hat;
 

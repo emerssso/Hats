@@ -2,7 +2,8 @@ package com.emerssso.hats;
 
 import android.content.Intent;
 
-import com.emerssso.hats.models.Hat;
+import com.emerssso.hats.realm.models.Hat;
+import com.emerssso.hats.realm.RealmWrapper;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -23,7 +24,8 @@ public class AddHatIntentServiceTests {
 
     public static final String HAT_NAME = "test";
     AddHatIntentService sut;
-    @Mock RealmWrapper wrapper;
+    @Mock
+    RealmWrapper wrapper;
     @Captor ArgumentCaptor<Hat> hatCaptor;
 
     @Before public void setUp() {
