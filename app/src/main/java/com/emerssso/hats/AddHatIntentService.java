@@ -14,7 +14,7 @@ import static com.emerssso.hats.HatsIntents.EXTRA_HAT_NAME;
  * hat.
  */
 public class AddHatIntentService extends RealmIntentService {
-    public static final String TAG = "AddHatService";
+    private static final String TAG = "AddHatService";
 
     public AddHatIntentService() {
         super(TAG);

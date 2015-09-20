@@ -1,7 +1,7 @@
 package com.emerssso.hats;
 
 /**
- * Created by Conner on 9/20/2015.
+ * Implicit intent-filters, extras, actions, etc. related to Hats
  */
 public class HatsIntents {
     /**

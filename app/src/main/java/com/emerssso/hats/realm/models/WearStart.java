@@ -8,6 +8,7 @@ import io.realm.RealmObject;
  * Represents a timestamp when a particular hat was put on (or the time at which the current hat was
  * removed).
  */
+@SuppressWarnings("unused")
 public class WearStart extends RealmObject {
 
     public static final String HAT = "hat";

@@ -12,7 +12,7 @@ import static com.emerssso.hats.HatsIntents.EXTRA_HAT_NAME;
  */
 public class RemoveHatDataIntentService extends RealmIntentService {
 
-    public static final String TAG = "RemoveHatData";
+    private static final String TAG = "RemoveHatData";
 
     public RemoveHatDataIntentService() {
         super(TAG);
