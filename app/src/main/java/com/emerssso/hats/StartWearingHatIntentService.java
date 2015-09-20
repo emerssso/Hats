@@ -16,7 +16,7 @@ import static com.emerssso.hats.HatsIntents.EXTRA_START_MILLIS;
  */
 public class StartWearingHatIntentService extends RealmIntentService {
 
-    public static final String TAG = "StartWearingHat";
+    private static final String TAG = "StartWearingHat";
 
     public StartWearingHatIntentService() {
         super(TAG);
