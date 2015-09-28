@@ -1,8 +1,9 @@
 package com.emerssso.hats;
 
+import android.app.IntentService;
 import android.content.Intent;
 
-import com.emerssso.hats.realm.RealmIntentService;
+import com.emerssso.hats.realm.RealmWrapper;
 
 import static com.emerssso.hats.HatsIntents.EXTRA_HAT_NAME;
 
@@ -10,7 +11,7 @@ import static com.emerssso.hats.HatsIntents.EXTRA_HAT_NAME;
  * Removes a hat and all wear times for that hat. Will NOT assume that null = "no hat", if "no hat"
  * needs to be deleted, it needs to be passed explicitly.
  */
-public class RemoveHatDataIntentService extends RealmIntentService {
+public class RemoveHatDataIntentService extends IntentService {
 
     private static final String TAG = "RemoveHatData";
 
@@ -22,7 +23,10 @@ public class RemoveHatDataIntentService extends RealmIntentService {
         String hatName = intent.getStringExtra(EXTRA_HAT_NAME);
 
         if(hatName != null) {
-            getWrapper().removeHat(hatName);
+            RealmWrapper wrapper = new RealmWrapper();
+
+            wrapper.removeHat(hatName);
+            wrapper.close();
         }
     }
 }

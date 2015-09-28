@@ -1,10 +1,11 @@
 package com.emerssso.hats;
 
+import android.app.IntentService;
 import android.content.Intent;
 
+import com.emerssso.hats.realm.RealmWrapper;
 import com.emerssso.hats.realm.models.Hat;
 import com.emerssso.hats.realm.models.WearStart;
-import com.emerssso.hats.realm.RealmIntentService;
 
 import java.util.Date;
 
@@ -14,7 +15,7 @@ import static com.emerssso.hats.HatsIntents.EXTRA_START_MILLIS;
 /**
  * Intent service that inserts a passed timestamp at which the passed hat was put on.
  */
-public class StartWearingHatIntentService extends RealmIntentService {
+public class StartWearingHatIntentService extends IntentService {
 
     private static final String TAG = "StartWearingHat";
 
@@ -35,11 +36,13 @@ public class StartWearingHatIntentService extends RealmIntentService {
             startMillis = System.currentTimeMillis();
         }
 
-        Hat hat = getWrapper().getHatWithName(hatName);
+        RealmWrapper wrapper = new RealmWrapper();
+
+        Hat hat = wrapper.getHatWithName(hatName);
 
         WearStart start = new WearStart(hat, new Date(startMillis));
 
-        getWrapper().copyToRealmOrUpdate(start);
+        wrapper.copyToRealmOrUpdate(start);
     }
 
 }
