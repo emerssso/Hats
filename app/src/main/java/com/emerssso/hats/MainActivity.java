@@ -12,7 +12,10 @@ import android.support.v7.widget.Toolbar;
 /**
  * Main activity for the app that uses tabbed navigation
  */
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements ManageHatsFragment.Callbacks {
+
+    ManageHatsFragment manageHatsFragment;
+    HatHistoryFragment historyFragment;
 
     @Override public void onCreate(Bundle state) {
         super.onCreate(state);
@@ -25,9 +28,10 @@ public class MainActivity extends AppCompatActivity {
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tab_layout);
         ViewPager viewPager = (ViewPager) findViewById(R.id.view_pager);
 
+        manageHatsFragment = new ManageHatsFragment();
+        historyFragment = new HatHistoryFragment();
+
         PagerAdapter pagerAdapter = new FragmentPagerAdapter(getSupportFragmentManager()) {
-            ManageHatsFragment manageHatsFragment = new ManageHatsFragment();
-            HatHistoryFragment historyFragment = new HatHistoryFragment();
 
             @Override public int getCount() {
                 return 2;
@@ -58,5 +62,9 @@ public class MainActivity extends AppCompatActivity {
         viewPager.setAdapter(pagerAdapter);
 
         tabLayout.setupWithViewPager(viewPager);
+    }
+
+    @Override public void saveWithSnackbar(String name) {
+        manageHatsFragment.saveWithSnackbar(name);
     }
 }

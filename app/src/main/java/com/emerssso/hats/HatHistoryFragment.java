@@ -12,9 +12,12 @@ import android.view.ViewGroup;
  * Fragment for displaying hat wearing history
  */
 public class HatHistoryFragment extends Fragment {
-    @SuppressLint("InflateParams")
+
+    @SuppressLint("InflateParams") //can't use container when attaching fragment to ViewPager
     @Override public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
                                        @Nullable Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_history, null);
     }
+
+
 }

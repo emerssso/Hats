@@ -25,8 +25,5 @@ dependencies {
     compile 'io.realm:realm-android:0.82.2'
     compile 'org.apache.commons:commons-lang3:3.4'
     compile 'com.android.support:design:23.0.1'
-
-    testCompile 'org.robolectric:robolectric:3.0'
-    testCompile 'junit:junit:4.12'
-    testCompile 'org.mockito:mockito-core:2.0.31-beta'
+    compile 'com.android.support:recyclerview-v7:23.0.1'
 }

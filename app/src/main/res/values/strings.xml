@@ -1,7 +1,16 @@
 <resources>
     <string name="app_name">Hats</string>
     <string name="action_settings">Settings</string>
-    <string name="fragment_title_hats">Hats</string>
-    <string name="fragment_title_history">History</string>
+    <string name="fragment_title_hats">HATS</string>
+    <string name="fragment_title_history">HISTORY</string>
     <string name="blank"/>
+    <string name="coming_soon">Coming soon!</string>
+    <string name="no_hats_found">No hats found</string>
+    <string name="hat_name">Hat name</string>
+    <string name="dialog_add_hat_instructions">Give you hat a name</string>
+    <string name="save_caps">SAVE</string>
+    <string name="empty_hat_name_warning">Your hat needs a name before it can be saved</string>
+    <string name="cancel_caps">CANCEL</string>
+    <string name="snackbar_created_hat">Created %s hat</string>
+    <string name="discard">Discard</string>
 </resources>
