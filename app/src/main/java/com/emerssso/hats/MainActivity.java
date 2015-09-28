@@ -2,11 +2,12 @@ package com.emerssso.hats;
 
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.view.View;
 
 /**
  * Main activity for the app that uses tabbed navigation
@@ -24,17 +25,38 @@ public class MainActivity extends AppCompatActivity {
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tab_layout);
         ViewPager viewPager = (ViewPager) findViewById(R.id.view_pager);
 
-        PagerAdapter pagerAdapter = new PagerAdapter() {
+        PagerAdapter pagerAdapter = new FragmentPagerAdapter(getSupportFragmentManager()) {
+            ManageHatsFragment manageHatsFragment = new ManageHatsFragment();
+            HatHistoryFragment historyFragment = new HatHistoryFragment();
+
             @Override public int getCount() {
-                return 0;
+                return 2;
             }
 
-            @Override public boolean isViewFromObject(View view, Object object) {
-                return false;
+            @Override public CharSequence getPageTitle(int position) {
+                switch (position) {
+                    case 0:
+                        return getString(R.string.fragment_title_hats);
+                    case 1:
+                        return getString(R.string.fragment_title_history);
+                    default:
+                        return getString(R.string.blank);
+                }
+            }
+
+            @Override public Fragment getItem(int position) {
+                switch (position) {
+                    case 0:
+                        return manageHatsFragment;
+                    case 1:
+                        return historyFragment;
+                    default:
+                        return null;
+                }
             }
         };
         viewPager.setAdapter(pagerAdapter);
 
-        tabLayout.setTabsFromPagerAdapter(pagerAdapter);
+        tabLayout.setupWithViewPager(viewPager);
     }
 }
