@@ -25,7 +25,7 @@ public class RealmWrapper implements Closeable {
     public <E extends RealmObject> E copyToRealmOrUpdate(E realmObject) {
         realm.beginTransaction();
 
-        E newRealmObject = realm.copyToRealmOrUpdate(realmObject);
+        E newRealmObject = realm.copyToRealm(realmObject);
 
         realm.commitTransaction();
 

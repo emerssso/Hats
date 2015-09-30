@@ -22,7 +22,8 @@
             android:id="@+id/hats_list"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            />
+            android:layout_marginBottom="@dimen/list_end_margin"
+            android:layout_marginTop="@dimen/list_end_margin"/>
 
     </ViewSwitcher>
 

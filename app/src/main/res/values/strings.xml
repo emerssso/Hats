@@ -13,4 +13,6 @@
     <string name="cancel_caps">CANCEL</string>
     <string name="snackbar_created_hat">Created %s hat</string>
     <string name="discard">Discard</string>
+    <string name="wear">WEAR</string>
+    <string name="putting_on_hat">Putting on %s hat</string>
 </resources>
