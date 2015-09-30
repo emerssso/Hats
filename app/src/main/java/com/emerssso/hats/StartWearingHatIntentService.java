@@ -3,11 +3,12 @@ package com.emerssso.hats;
 import android.app.IntentService;
 import android.content.Intent;
 
-import com.emerssso.hats.realm.RealmWrapper;
 import com.emerssso.hats.realm.models.Hat;
 import com.emerssso.hats.realm.models.WearStart;
 
 import java.util.Date;
+
+import io.realm.Realm;
 
 import static com.emerssso.hats.HatsIntents.EXTRA_HAT_NAME;
 import static com.emerssso.hats.HatsIntents.EXTRA_START_MILLIS;
@@ -36,13 +37,19 @@ public class StartWearingHatIntentService extends IntentService {
             startMillis = System.currentTimeMillis();
         }
 
-        RealmWrapper wrapper = new RealmWrapper();
+        Realm realm = Realm.getDefaultInstance();
 
-        Hat hat = wrapper.getHatWithName(hatName);
+        Hat hat = realm.where(Hat.class).equalTo(Hat.NAME, hatName).findFirst();
 
         WearStart start = new WearStart(hat, new Date(startMillis));
 
-        wrapper.copyToRealmOrUpdate(start);
+        realm.beginTransaction();
+
+        realm.copyToRealm(start);
+
+        realm.commitTransaction();
+
+        realm.close();
     }
 
 }

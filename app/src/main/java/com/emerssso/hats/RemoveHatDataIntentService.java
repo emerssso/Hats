@@ -3,7 +3,11 @@ package com.emerssso.hats;
 import android.app.IntentService;
 import android.content.Intent;
 
-import com.emerssso.hats.realm.RealmWrapper;
+import com.emerssso.hats.realm.models.Hat;
+import com.emerssso.hats.realm.models.WearStart;
+
+import io.realm.Realm;
+import io.realm.RealmResults;
 
 import static com.emerssso.hats.HatsIntents.EXTRA_HAT_NAME;
 
@@ -23,10 +27,27 @@ public class RemoveHatDataIntentService extends IntentService {
         String hatName = intent.getStringExtra(EXTRA_HAT_NAME);
 
         if(hatName != null) {
-            RealmWrapper wrapper = new RealmWrapper();
+            Realm realm = Realm.getDefaultInstance();
 
-            wrapper.removeHat(hatName);
-            wrapper.close();
+            Hat hat = realm.where(Hat.class).equalTo(Hat.NAME, hatName).findFirst();
+
+            //then, remove hat
+            if (hat != null) {
+                realm.beginTransaction();
+
+                //remove all WearStarts for Hat
+                RealmResults<WearStart> starts = realm.where(WearStart.class)
+                        .equalTo("hat.name", hatName)
+                        .findAll();
+
+                starts.clear();
+
+                hat.removeFromRealm();
+
+                realm.commitTransaction();
+            }
+
+            realm.close();
         }
     }
 }

@@ -198,14 +198,10 @@ public class ManageHatsFragment extends Fragment {
     }
 
     public class HatsHolder extends RecyclerView.ViewHolder {
-        @NonNull
-        final public TextView name;
-        @NonNull
-        final public View button;
-        @NonNull
-        final public View stroke;
-        @Nullable
-        public Hat hat;
+        @NonNull final public TextView name;
+        @NonNull final public View button;
+        @NonNull final public View stroke;
+        @Nullable public Hat hat;
 
         public HatsHolder(@NonNull View itemView) {
             super(itemView);

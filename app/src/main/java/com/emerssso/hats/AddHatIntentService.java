@@ -4,10 +4,11 @@ import android.app.IntentService;
 import android.content.Intent;
 import android.util.Log;
 
-import com.emerssso.hats.realm.RealmWrapper;
 import com.emerssso.hats.realm.models.Hat;
 
 import org.apache.commons.lang3.StringUtils;
+
+import io.realm.Realm;
 
 import static com.emerssso.hats.HatsIntents.EXTRA_HAT_NAME;
 
@@ -23,7 +24,7 @@ public class AddHatIntentService extends IntentService {
     }
 
     @Override protected void onHandleIntent(Intent intent) {
-        RealmWrapper wrapper = new RealmWrapper();
+        Realm realm = Realm.getDefaultInstance();
 
         String hatName = intent.getStringExtra(EXTRA_HAT_NAME);
 
@@ -33,8 +34,13 @@ public class AddHatIntentService extends IntentService {
 
         Hat hat = new Hat(hatName);
 
-        wrapper.copyToRealmOrUpdate(hat);
-        wrapper.close();
+        realm.beginTransaction();
+
+        realm.copyToRealmOrUpdate(hat);
+
+        realm.commitTransaction();
+
+        realm.close();
         Log.d(TAG, hatName + " hat created");
     }
 }
