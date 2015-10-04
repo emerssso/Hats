@@ -1,6 +1,5 @@
 package com.emerssso.hats;
 
-import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -42,10 +41,9 @@ public class ManageHatsFragment extends Fragment {
     private static final String TAG = "ManageHatsFragment";
     private CoordinatorLayout layout;
 
-    @SuppressLint("InflateParams") //can't use container when attaching fragment to ViewPager
     @Override public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
                                        @Nullable Bundle savedInstanceState) {
-        layout = (CoordinatorLayout) inflater.inflate(R.layout.fragment_manage_hats, null);
+        layout = (CoordinatorLayout) inflater.inflate(R.layout.fragment_manage_hats, container, false);
         ViewSwitcher switcher = (ViewSwitcher) layout.findViewById(R.id.switcher);
 
         FloatingActionButton add = (FloatingActionButton) layout.findViewById(R.id.add_hat);
