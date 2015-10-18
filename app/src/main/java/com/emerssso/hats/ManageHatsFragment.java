@@ -1,5 +1,6 @@
 package com.emerssso.hats;
 
+import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -137,7 +138,49 @@ public class ManageHatsFragment extends Fragment {
         snackbar.show();
     }
 
-    public void putOnHat(final Hat hat) {
+    public void switchHat(@NonNull final Hat hat) {
+        if (hat.equals(hatsAdapter.currentHat)) {
+            removeHat(hat);
+        } else {
+            putOnHat(hat);
+        }
+    }
+
+    private void removeHat(@NonNull Hat hat) {
+        final long wearMillis = System.currentTimeMillis();
+
+        Snackbar snackbar = Snackbar.make(layout,
+                getContext().getString(R.string.removing_hat, hat.getName()),
+                Snackbar.LENGTH_LONG);
+
+        snackbar.setAction(R.string.cancel_caps, new View.OnClickListener() {
+            @Override public void onClick(View v) {
+
+            }
+        });
+
+        snackbar.setCallback(new Snackbar.Callback() {
+            @Override public void onDismissed(Snackbar snackbar, int event) {
+                super.onDismissed(snackbar, event);
+
+                if (event != Snackbar.Callback.DISMISS_EVENT_ACTION) {
+                    //TODO: deal with case where callback is called after fragment is detached
+                    Intent intent = new Intent(getContext(), StartWearingHatIntentService.class);
+                    intent.putExtra(HatsIntents.EXTRA_HAT_NAME, Hat.NO_HAT_NAME);
+                    intent.putExtra(HatsIntents.EXTRA_START_MILLIS, wearMillis);
+                    getActivity().startService(intent);
+
+                    Log.d(TAG, "clearing current hat");
+                } else {
+                    Log.d(TAG, "canceled clearing current hat");
+                }
+            }
+        });
+        snackbar.show();
+    }
+
+
+    public void putOnHat(@NonNull final Hat hat) {
         final long wearMillis = System.currentTimeMillis();
 
         Snackbar snackbar = Snackbar.make(layout,
@@ -176,7 +219,8 @@ public class ManageHatsFragment extends Fragment {
 
     public static class AddHatDialogFragment extends DialogFragment {
 
-        @Override @NonNull public Dialog onCreateDialog(Bundle state) {
+        @Override @NonNull @SuppressLint("InflateParams")
+        public Dialog onCreateDialog(Bundle state) {
             final LinearLayout layout = (LinearLayout) LayoutInflater.from(getContext())
                     .inflate(R.layout.dialog_add_hat, null);
 
@@ -208,10 +252,10 @@ public class ManageHatsFragment extends Fragment {
 
     public class HatsAdapter extends RecyclerView.Adapter<HatsHolder> {
 
-        @NonNull Hat currentHat;
+        @Nullable Hat currentHat;
         RealmResults<Hat> hats;
 
-        public HatsAdapter(RealmResults<Hat> hats, @NonNull Hat currentHat) {
+        public HatsAdapter(RealmResults<Hat> hats, @Nullable Hat currentHat) {
             this.hats = hats;
             this.currentHat = currentHat;
         }
@@ -226,7 +270,8 @@ public class ManageHatsFragment extends Fragment {
             holder.name.setText(hats.get(position).getName());
             holder.hat = (hats.get(position));
 
-            holder.currentIndicator.setDisplayedChild(currentHat.equals(holder.hat) ?
+            holder.currentIndicator.setDisplayedChild((
+                    currentHat != null && currentHat.equals(holder.hat)) ?
                     holder.currentIndex : holder.otherIndex);
 
             //holder.stroke.setVisibility(position == hats.size() - 1 ? View.GONE : View.VISIBLE);
@@ -259,7 +304,7 @@ public class ManageHatsFragment extends Fragment {
             button.setOnClickListener(new View.OnClickListener() {
                 @Override public void onClick(View v) {
                     if (hat != null) {
-                        putOnHat(hat);
+                        switchHat(hat);
                     }
                 }
             });

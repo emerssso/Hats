@@ -15,4 +15,5 @@
     <string name="discard">Discard</string>
     <string name="wear">WEAR</string>
     <string name="putting_on_hat">Putting on %s hat</string>
+    <string name="removing_hat">Removing %s hat</string>
 </resources>
