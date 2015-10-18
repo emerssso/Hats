@@ -7,4 +7,5 @@
     <dimen name="list_end_margin">8dp</dimen>
     <dimen name="list_item_margin">16dp</dimen>
     <dimen name="list_item_margin_bottom">20dp</dimen>
+    <dimen name="hat_row_drawable_size">16dp</dimen>
 </resources>

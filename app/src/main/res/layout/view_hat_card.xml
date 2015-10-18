@@ -7,6 +7,24 @@
     android:gravity="center_vertical"
     android:orientation="vertical">
 
+    <ViewSwitcher
+        android:id="@+id/current_indicator"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+
+        <ImageView
+            android:id="@+id/current"
+            android:layout_width="@dimen/hat_row_drawable_size"
+            android:layout_height="@dimen/hat_row_drawable_size"
+            android:src="@drawable/current_hat"/>
+
+        <ImageView
+            android:id="@+id/other"
+            android:layout_width="@dimen/hat_row_drawable_size"
+            android:layout_height="@dimen/hat_row_drawable_size"
+            android:src="@drawable/other_hat"/>
+    </ViewSwitcher>
+
     <TextView
         android:id="@+id/hat_name"
         style="@style/TextAppearance.AppCompat.Headline"
@@ -20,7 +38,7 @@
         android:gravity="center_vertical"
         android:text="sample"/>
 
-    <ViewSwitcher
+    <View
         android:id="@+id/divider"
         android:layout_width="match_parent"
         android:layout_height="1dp"

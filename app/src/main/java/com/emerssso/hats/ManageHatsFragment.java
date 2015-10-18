@@ -1,10 +1,10 @@
 package com.emerssso.hats;
 
 import android.app.Dialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.SystemClock;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.CoordinatorLayout;
@@ -31,6 +31,7 @@ import com.emerssso.hats.realm.models.Hat;
 import org.apache.commons.lang3.StringUtils;
 
 import io.realm.Realm;
+import io.realm.RealmChangeListener;
 import io.realm.RealmResults;
 
 /**
@@ -40,10 +41,32 @@ public class ManageHatsFragment extends Fragment {
 
     private static final String TAG = "ManageHatsFragment";
     private CoordinatorLayout layout;
+    private DataProvider dataProvider;
+    private HatsAdapter hatsAdapter;
+    private RealmChangeListener listener = new RealmChangeListener() {
+        @Override public void onChange() {
+            if (hatsAdapter != null) {
+                hatsAdapter.currentHat = dataProvider.getCurrentHat();
+                hatsAdapter.notifyDataSetChanged();
+            }
+        }
+    };
+
+    @Override public void onAttach(Context context) {
+        super.onAttach(context);
+
+        if (context instanceof DataProvider) {
+            this.dataProvider = (DataProvider) context;
+        } else {
+            Log.e(TAG, "ManageHatsFragment used by activity which does not implement DataProvider");
+        }
+    }
 
     @Override public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
                                        @Nullable Bundle savedInstanceState) {
-        layout = (CoordinatorLayout) inflater.inflate(R.layout.fragment_manage_hats, container, false);
+        layout = (CoordinatorLayout) inflater.inflate(
+                R.layout.fragment_manage_hats, container, false);
+
         ViewSwitcher switcher = (ViewSwitcher) layout.findViewById(R.id.switcher);
 
         FloatingActionButton add = (FloatingActionButton) layout.findViewById(R.id.add_hat);
@@ -58,19 +81,30 @@ public class ManageHatsFragment extends Fragment {
         hatsList.setHasFixedSize(false);
         hatsList.setLayoutManager(new LinearLayoutManager(getContext()));
 
-        //TODO: take this offline or use RealmAdapter
-        long start = SystemClock.currentThreadTimeMillis();
-        RealmResults<Hat> hats = Realm.getDefaultInstance().where(Hat.class).findAll();
-        long end = SystemClock.currentThreadTimeMillis();
-        Log.d(TAG, "online realm query took " + (end - start) + " millis");
+        RealmResults<Hat> hats = dataProvider.getAllHats();
+        Hat currentHat = dataProvider.getCurrentHat();
 
-        hatsList.setAdapter(new HatsAdapter(hats));
+        hatsAdapter = new HatsAdapter(hats, currentHat);
+        hatsList.setAdapter(hatsAdapter);
 
         if (hats != null && hats.size() > 0) {
             switcher.showNext();
         }
 
         return layout;
+    }
+
+    @Override public void onResume() {
+        super.onResume();
+        Realm.getDefaultInstance().addChangeListener(listener);
+
+        hatsAdapter.currentHat = dataProvider.getCurrentHat();
+        hatsAdapter.notifyDataSetChanged();
+    }
+
+    @Override public void onPause() {
+        super.onPause();
+        Realm.getDefaultInstance().removeChangeListener(listener);
     }
 
     public void saveWithSnackbar(final String name) {
@@ -121,6 +155,7 @@ public class ManageHatsFragment extends Fragment {
                 super.onDismissed(snackbar, event);
 
                 if (event != Snackbar.Callback.DISMISS_EVENT_ACTION) {
+                    //TODO: deal with case where callback is called after fragment is detached
                     Intent intent = new Intent(getContext(), StartWearingHatIntentService.class);
                     intent.putExtra(HatsIntents.EXTRA_HAT_NAME, hat.getName());
                     intent.putExtra(HatsIntents.EXTRA_START_MILLIS, wearMillis);
@@ -173,21 +208,28 @@ public class ManageHatsFragment extends Fragment {
 
     public class HatsAdapter extends RecyclerView.Adapter<HatsHolder> {
 
+        @NonNull Hat currentHat;
         RealmResults<Hat> hats;
 
-        public HatsAdapter(RealmResults<Hat> hats) {
+        public HatsAdapter(RealmResults<Hat> hats, @NonNull Hat currentHat) {
             this.hats = hats;
+            this.currentHat = currentHat;
         }
 
         @Override
         public HatsHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            return new HatsHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.view_hat_card, parent, false));
+            return new HatsHolder(LayoutInflater.from(parent.getContext())
+                    .inflate(R.layout.view_hat_card, parent, false));
         }
 
         @Override public void onBindViewHolder(HatsHolder holder, int position) {
             holder.name.setText(hats.get(position).getName());
             holder.hat = (hats.get(position));
-            holder.stroke.setVisibility(position == hats.size() - 1 ? View.GONE : View.VISIBLE);
+
+            holder.currentIndicator.setDisplayedChild(currentHat.equals(holder.hat) ?
+                    holder.currentIndex : holder.otherIndex);
+
+            //holder.stroke.setVisibility(position == hats.size() - 1 ? View.GONE : View.VISIBLE);
         }
 
         @Override public int getItemCount() {
@@ -199,7 +241,10 @@ public class ManageHatsFragment extends Fragment {
         @NonNull final public TextView name;
         @NonNull final public View button;
         @NonNull final public View stroke;
+        @NonNull final public ViewSwitcher currentIndicator;
         @Nullable public Hat hat;
+        public int currentIndex;
+        public int otherIndex;
 
         public HatsHolder(@NonNull View itemView) {
             super(itemView);
@@ -207,6 +252,9 @@ public class ManageHatsFragment extends Fragment {
             name = (TextView) itemView.findViewById(R.id.hat_name);
             button = itemView;
             stroke = itemView.findViewById(R.id.divider);
+            currentIndicator = (ViewSwitcher) itemView.findViewById(R.id.current_indicator);
+            currentIndex = currentIndicator.indexOfChild(currentIndicator.findViewById(R.id.current));
+            otherIndex = currentIndicator.indexOfChild(currentIndicator.findViewById(R.id.other));
 
             button.setOnClickListener(new View.OnClickListener() {
                 @Override public void onClick(View v) {

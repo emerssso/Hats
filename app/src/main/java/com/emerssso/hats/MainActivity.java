@@ -1,6 +1,7 @@
 package com.emerssso.hats;
 
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentPagerAdapter;
@@ -8,18 +9,53 @@ import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
+
+import com.emerssso.hats.realm.models.Hat;
+import com.emerssso.hats.realm.models.WearStart;
+
+import io.realm.Realm;
+import io.realm.RealmResults;
 
 /**
  * Main activity for the app that uses tabbed navigation
  */
-public class MainActivity extends AppCompatActivity implements ManageHatsFragment.Callbacks {
+public class MainActivity extends AppCompatActivity
+        implements ManageHatsFragment.Callbacks, DataProvider {
 
+    private static final String TAG = "MainActivity";
     ManageHatsFragment manageHatsFragment;
     HatHistoryFragment historyFragment;
+    private Realm realm;
+
+    public RealmResults<Hat> getAllHats() {
+        //TODO: take this offline or use RealmAdapter
+        long start = SystemClock.currentThreadTimeMillis();
+        RealmResults<Hat> hats = realm.where(Hat.class).findAll();
+        long end = SystemClock.currentThreadTimeMillis();
+        Log.d(TAG, "online realm query took " + (end - start) + " millis");
+        return hats;
+    }
+
+    @Override public RealmResults<WearStart> getAllWearStarts() {
+        //TODO: take this offline or use RealmAdapter
+        long start = SystemClock.currentThreadTimeMillis();
+        RealmResults<WearStart> starts = realm.where(WearStart.class)
+                .findAllSorted(WearStart.START, false);
+        long end = SystemClock.currentThreadTimeMillis();
+        Log.d(TAG, "online realm query took " + (end - start) + " millis");
+        return starts;
+    }
+
+    @Override public Hat getCurrentHat() {
+        return getAllWearStarts().first().getHat();
+    }
 
     @Override public void onCreate(Bundle state) {
         super.onCreate(state);
         setContentView(R.layout.activity_main);
+
+        realm = Realm.getDefaultInstance();
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
 
@@ -62,6 +98,11 @@ public class MainActivity extends AppCompatActivity implements ManageHatsFragmen
         viewPager.setAdapter(pagerAdapter);
 
         tabLayout.setupWithViewPager(viewPager);
+    }
+
+    @Override public void onDestroy() {
+        super.onDestroy();
+        realm.close();
     }
 
     @Override public void saveWithSnackbar(String name) {
