@@ -9,7 +9,6 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.CoordinatorLayout;
-import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.DialogFragment;
@@ -31,6 +30,11 @@ import com.emerssso.hats.realm.models.Hat;
 
 import org.apache.commons.lang3.StringUtils;
 
+import javax.inject.Inject;
+
+import butterknife.Bind;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
 import io.realm.Realm;
 import io.realm.RealmChangeListener;
 import io.realm.RealmResults;
@@ -41,6 +45,9 @@ import io.realm.RealmResults;
 public class ManageHatsFragment extends Fragment {
 
     private static final String TAG = "ManageHatsFragment";
+    @Inject Realm realm;
+    @Bind(R.id.switcher) ViewSwitcher switcher;
+    @Bind(R.id.hats_list) RecyclerView hatsList;
     private CoordinatorLayout layout;
     private DataProvider dataProvider;
     private HatsAdapter hatsAdapter;
@@ -67,18 +74,9 @@ public class ManageHatsFragment extends Fragment {
                                        @Nullable Bundle savedInstanceState) {
         layout = (CoordinatorLayout) inflater.inflate(
                 R.layout.fragment_manage_hats, container, false);
+        ButterKnife.bind(this, layout);
+        HatsApplication.getApplicationComponent(getActivity().getApplication()).inject(this);
 
-        ViewSwitcher switcher = (ViewSwitcher) layout.findViewById(R.id.switcher);
-
-        FloatingActionButton add = (FloatingActionButton) layout.findViewById(R.id.add_hat);
-
-        add.setOnClickListener(new View.OnClickListener() {
-            @Override public void onClick(View v) {
-                new AddHatDialogFragment().show(getFragmentManager(), "addHatDialog");
-            }
-        });
-
-        RecyclerView hatsList = (RecyclerView) layout.findViewById(R.id.hats_list);
         hatsList.setHasFixedSize(false);
         hatsList.setLayoutManager(new LinearLayoutManager(getContext()));
 
@@ -95,9 +93,18 @@ public class ManageHatsFragment extends Fragment {
         return layout;
     }
 
+    @Override public void onDestroyView() {
+        super.onDestroyView();
+        ButterKnife.unbind(this);
+    }
+
+    @OnClick(R.id.add_hat) public void showAddHatDialog() {
+        new AddHatDialogFragment().show(getFragmentManager(), "addHatDialog");
+    }
+
     @Override public void onResume() {
         super.onResume();
-        Realm.getDefaultInstance().addChangeListener(listener);
+        realm.addChangeListener(listener);
 
         hatsAdapter.currentHat = dataProvider.getCurrentHat();
         hatsAdapter.notifyDataSetChanged();
@@ -105,7 +112,7 @@ public class ManageHatsFragment extends Fragment {
 
     @Override public void onPause() {
         super.onPause();
-        Realm.getDefaultInstance().removeChangeListener(listener);
+        realm.removeChangeListener(listener);
     }
 
     public void saveWithSnackbar(final String name) {
@@ -179,7 +186,6 @@ public class ManageHatsFragment extends Fragment {
         snackbar.show();
     }
 
-
     public void putOnHat(@NonNull final Hat hat) {
         final long wearMillis = System.currentTimeMillis();
 
@@ -219,15 +225,17 @@ public class ManageHatsFragment extends Fragment {
 
     public static class AddHatDialogFragment extends DialogFragment {
 
+        @Bind(R.id.hat_name_layout) TextInputLayout til;
+        @Bind(R.id.field_hat_name) EditText hatName;
+
         @Override @NonNull @SuppressLint("InflateParams")
         public Dialog onCreateDialog(Bundle state) {
             final LinearLayout layout = (LinearLayout) LayoutInflater.from(getContext())
                     .inflate(R.layout.dialog_add_hat, null);
-
-            TextInputLayout til = (TextInputLayout) layout.findViewById(R.id.hat_name_layout);
+            ButterKnife.bind(this, layout);
 
             til.setHint(getString(R.string.hat_name));
-            final EditText hatName = (EditText) til.findViewById(R.id.field_hat_name);
+
             hatName.clearFocus();
 
             return new AlertDialog.Builder(getContext(), R.style.AppDialogTheme)
@@ -283,21 +291,19 @@ public class ManageHatsFragment extends Fragment {
     }
 
     public class HatsHolder extends RecyclerView.ViewHolder {
-        @NonNull final public TextView name;
         @NonNull final public View button;
-        @NonNull final public View stroke;
-        @NonNull final public ViewSwitcher currentIndicator;
         @Nullable public Hat hat;
         public int currentIndex;
         public int otherIndex;
+        @Bind(R.id.hat_name) TextView name;
+        @Bind(R.id.divider) View stroke;
+        @Bind(R.id.current_indicator) ViewSwitcher currentIndicator;
 
         public HatsHolder(@NonNull View itemView) {
             super(itemView);
-
-            name = (TextView) itemView.findViewById(R.id.hat_name);
+            ButterKnife.bind(this, itemView);
             button = itemView;
-            stroke = itemView.findViewById(R.id.divider);
-            currentIndicator = (ViewSwitcher) itemView.findViewById(R.id.current_indicator);
+
             currentIndex = currentIndicator.indexOfChild(currentIndicator.findViewById(R.id.current));
             otherIndex = currentIndicator.indexOfChild(currentIndicator.findViewById(R.id.other));
 

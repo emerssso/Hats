@@ -6,9 +6,12 @@ import android.content.Intent;
 import com.emerssso.hats.realm.models.Hat;
 import com.emerssso.hats.realm.models.WearStart;
 
+import javax.inject.Inject;
+
 import io.realm.Realm;
 import io.realm.RealmResults;
 
+import static com.emerssso.hats.HatsApplication.getApplicationComponent;
 import static com.emerssso.hats.HatsIntents.EXTRA_HAT_NAME;
 
 /**
@@ -19,15 +22,17 @@ public class RemoveHatDataIntentService extends IntentService {
 
     private static final String TAG = "RemoveHatData";
 
+    @Inject Realm realm;
+
     public RemoveHatDataIntentService() {
         super(TAG);
     }
 
     @Override protected void onHandleIntent(Intent intent) {
         String hatName = intent.getStringExtra(EXTRA_HAT_NAME);
+        getApplicationComponent(getApplication()).inject(this);
 
         if(hatName != null) {
-            Realm realm = Realm.getDefaultInstance();
 
             Hat hat = realm.where(Hat.class).equalTo(Hat.NAME, hatName).findFirst();
 

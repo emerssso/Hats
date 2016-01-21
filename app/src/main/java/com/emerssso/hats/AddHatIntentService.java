@@ -8,8 +8,11 @@ import com.emerssso.hats.realm.models.Hat;
 
 import org.apache.commons.lang3.StringUtils;
 
+import javax.inject.Inject;
+
 import io.realm.Realm;
 
+import static com.emerssso.hats.HatsApplication.getApplicationComponent;
 import static com.emerssso.hats.HatsIntents.EXTRA_HAT_NAME;
 
 /**
@@ -19,12 +22,14 @@ import static com.emerssso.hats.HatsIntents.EXTRA_HAT_NAME;
 public class AddHatIntentService extends IntentService {
     private static final String TAG = "AddHatService";
 
+    @Inject Realm realm;
+
     public AddHatIntentService() {
         super(TAG);
     }
 
     @Override protected void onHandleIntent(Intent intent) {
-        Realm realm = Realm.getDefaultInstance();
+        getApplicationComponent(getApplication()).inject(this);
 
         String hatName = intent.getStringExtra(EXTRA_HAT_NAME);
 

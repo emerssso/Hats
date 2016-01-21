@@ -8,8 +8,11 @@ import com.emerssso.hats.realm.models.WearStart;
 
 import java.util.Date;
 
+import javax.inject.Inject;
+
 import io.realm.Realm;
 
+import static com.emerssso.hats.HatsApplication.getApplicationComponent;
 import static com.emerssso.hats.HatsIntents.EXTRA_HAT_NAME;
 import static com.emerssso.hats.HatsIntents.EXTRA_START_MILLIS;
 
@@ -20,6 +23,8 @@ public class StartWearingHatIntentService extends IntentService {
 
     private static final String TAG = "StartWearingHat";
 
+    @Inject Realm realm;
+
     public StartWearingHatIntentService() {
         super(TAG);
         setIntentRedelivery(true);
@@ -29,6 +34,8 @@ public class StartWearingHatIntentService extends IntentService {
         String hatName = intent.getStringExtra(EXTRA_HAT_NAME);
         long startMillis = intent.getLongExtra(EXTRA_START_MILLIS, -1);
 
+        getApplicationComponent(getApplication()).inject(this);
+
         if(hatName == null) {
             hatName = Hat.NO_HAT_NAME;
         }
@@ -36,8 +43,6 @@ public class StartWearingHatIntentService extends IntentService {
         if(startMillis == -1) {
             startMillis = System.currentTimeMillis();
         }
-
-        Realm realm = Realm.getDefaultInstance();
 
         Hat hat = realm.where(Hat.class).equalTo(Hat.NAME, hatName).findFirst();
 

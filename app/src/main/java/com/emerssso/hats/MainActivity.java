@@ -2,6 +2,7 @@ package com.emerssso.hats;
 
 import android.os.Bundle;
 import android.os.SystemClock;
+import android.support.annotation.Nullable;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentPagerAdapter;
@@ -14,6 +15,10 @@ import android.util.Log;
 import com.emerssso.hats.realm.models.Hat;
 import com.emerssso.hats.realm.models.WearStart;
 
+import javax.inject.Inject;
+
+import butterknife.Bind;
+import butterknife.ButterKnife;
 import io.realm.Realm;
 import io.realm.RealmResults;
 
@@ -26,7 +31,10 @@ public class MainActivity extends AppCompatActivity
     private static final String TAG = "MainActivity";
     ManageHatsFragment manageHatsFragment;
     HatHistoryFragment historyFragment;
-    private Realm realm;
+    @Inject Realm realm;
+    @Bind(R.id.toolbar) Toolbar toolbar;
+    @Bind(R.id.tab_layout) TabLayout tabLayout;
+    @Bind(R.id.view_pager) ViewPager viewPager;
 
     public RealmResults<Hat> getAllHats() {
         //TODO: take this offline or use RealmAdapter
@@ -47,22 +55,18 @@ public class MainActivity extends AppCompatActivity
         return starts;
     }
 
-    @Override public Hat getCurrentHat() {
-        return getAllWearStarts().first().getHat();
+    @Override @Nullable public Hat getCurrentHat() {
+        RealmResults<WearStart> wearStarts = getAllWearStarts();
+        return !wearStarts.isEmpty() ? wearStarts.first().getHat() : null;
     }
 
     @Override public void onCreate(Bundle state) {
         super.onCreate(state);
         setContentView(R.layout.activity_main);
-
-        realm = Realm.getDefaultInstance();
-
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        HatsApplication.getApplicationComponent(getApplication()).inject(this);
+        ButterKnife.bind(this);
 
         setSupportActionBar(toolbar);
-
-        TabLayout tabLayout = (TabLayout) findViewById(R.id.tab_layout);
-        ViewPager viewPager = (ViewPager) findViewById(R.id.view_pager);
 
         manageHatsFragment = new ManageHatsFragment();
         historyFragment = new HatHistoryFragment();
