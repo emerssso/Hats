@@ -7,23 +7,14 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <ViewSwitcher
-        android:id="@+id/switcher"
+    <co.moonmonkeylabs.realmrecyclerview.RealmRecyclerView
+        android:id="@+id/hats_list"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
-
-        <TextView
-            style="@style/EmptyListFill.Text"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:text="@string/no_hats_found"/>
-
-        <android.support.v7.widget.RecyclerView
-            android:id="@+id/hats_list"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"/>
-
-    </ViewSwitcher>
+        android:layout_height="match_parent"
+        app:rrvEmptyLayoutId="@layout/empty_list"
+        app:rrvIsRefreshable="false"
+        app:rrvLayoutType="LinearLayout"
+        />
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/add_hat"
@@ -32,7 +23,7 @@
         android:layout_margin="16dp"
         android:src="@drawable/ic_add_white_24dp"
         app:elevation="6dp"
-        app:layout_anchor="@id/coordinator"
+        app:layout_anchor="@id/hats_list"
         app:layout_anchorGravity="bottom|right|end"
         app:pressedTranslationZ="12dp"/>
 

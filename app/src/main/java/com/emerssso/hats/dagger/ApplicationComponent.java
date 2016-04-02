@@ -2,9 +2,9 @@ package com.emerssso.hats.dagger;
 
 import com.emerssso.hats.AddHatIntentService;
 import com.emerssso.hats.MainActivity;
-import com.emerssso.hats.ManageHatsFragment;
 import com.emerssso.hats.RemoveHatDataIntentService;
 import com.emerssso.hats.StartWearingHatIntentService;
+import com.emerssso.hats.manage.ManageHatsFragment;
 
 import dagger.Component;
 

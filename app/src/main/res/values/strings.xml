@@ -1,4 +1,4 @@
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <string name="app_name">Hats</string>
     <string name="action_settings">Settings</string>
     <string name="fragment_title_hats">HATS</string>
@@ -10,8 +10,8 @@
     <string name="dialog_add_hat_instructions">Give you hat a name</string>
     <string name="save_caps">SAVE</string>
     <string name="empty_hat_name_warning">Your hat needs a name before it can be saved</string>
-    <string name="cancel_caps">CANCEL</string>
-    <string name="snackbar_created_hat">Created %s hat</string>
+    <string name="cancel_caps" tools:ignore="ButtonCase">CANCEL</string>
+    <string name="snackbar_created_hat">Creating %s hat</string>
     <string name="discard">Discard</string>
     <string name="wear">WEAR</string>
     <string name="putting_on_hat">Putting on %s hat</string>

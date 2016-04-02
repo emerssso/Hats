@@ -12,6 +12,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 
+import com.emerssso.hats.manage.ManageHatsFragment;
 import com.emerssso.hats.realm.models.Hat;
 import com.emerssso.hats.realm.models.WearStart;
 
@@ -21,6 +22,7 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 import io.realm.Realm;
 import io.realm.RealmResults;
+import io.realm.Sort;
 
 /**
  * Main activity for the app that uses tabbed navigation
@@ -49,7 +51,7 @@ public class MainActivity extends AppCompatActivity
         //TODO: take this offline or use RealmAdapter
         long start = SystemClock.currentThreadTimeMillis();
         RealmResults<WearStart> starts = realm.where(WearStart.class)
-                .findAllSorted(WearStart.START, false);
+                .findAllSorted(WearStart.START, Sort.DESCENDING);
         long end = SystemClock.currentThreadTimeMillis();
         Log.d(TAG, "online realm query took " + (end - start) + " millis");
         return starts;
@@ -105,8 +107,8 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override public void onDestroy() {
-        super.onDestroy();
         realm.close();
+        super.onDestroy();
     }
 
     @Override public void saveWithSnackbar(String name) {

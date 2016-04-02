@@ -1,43 +1,33 @@
-package com.emerssso.hats;
+package com.emerssso.hats.manage;
 
-import android.annotation.SuppressLint;
-import android.app.Dialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.Canvas;
-import android.graphics.Paint;
 import android.os.Bundle;
 import android.support.annotation.ColorInt;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
-import android.support.design.widget.TextInputLayout;
-import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
-import android.support.v7.app.AlertDialog;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.EditText;
-import android.widget.LinearLayout;
-import android.widget.TextView;
-import android.widget.Toast;
-import android.widget.ViewSwitcher;
 
+import com.emerssso.hats.AddHatIntentService;
+import com.emerssso.hats.DataProvider;
+import com.emerssso.hats.HatsApplication;
+import com.emerssso.hats.HatsIntents;
+import com.emerssso.hats.R;
+import com.emerssso.hats.StartWearingHatIntentService;
 import com.emerssso.hats.realm.models.Hat;
-
-import org.apache.commons.lang3.StringUtils;
 
 import javax.inject.Inject;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import co.moonmonkeylabs.realmrecyclerview.RealmRecyclerView;
 import io.realm.Realm;
 import io.realm.RealmChangeListener;
 import io.realm.RealmResults;
@@ -45,19 +35,19 @@ import io.realm.RealmResults;
 /**
  * A fragment for adding, deleting, and switching between hats
  */
-public class ManageHatsFragment extends Fragment {
+public class ManageHatsFragment extends Fragment implements HatsHolder.HatSwitcher {
 
+    public static final String TAG_ADD_HAT_DIALOG = "addHatDialog";
     private static final String TAG = "ManageHatsFragment";
     @Inject Realm realm;
-    @Bind(R.id.switcher) ViewSwitcher switcher;
-    @Bind(R.id.hats_list) RecyclerView hatsList;
+    @Bind(R.id.hats_list) RealmRecyclerView hatsList;
     private CoordinatorLayout layout;
     private DataProvider dataProvider;
     private HatsAdapter hatsAdapter;
     private RealmChangeListener listener = new RealmChangeListener() {
         @Override public void onChange() {
             if (hatsAdapter != null) {
-                hatsAdapter.currentHat = dataProvider.getCurrentHat();
+                hatsAdapter.setCurrentHat(dataProvider.getCurrentHat());
                 hatsAdapter.notifyDataSetChanged();
             }
         }
@@ -80,20 +70,13 @@ public class ManageHatsFragment extends Fragment {
         ButterKnife.bind(this, layout);
         HatsApplication.getApplicationComponent(getActivity().getApplication()).inject(this);
 
-        hatsList.setHasFixedSize(false);
-        hatsList.setLayoutManager(new LinearLayoutManager(getContext()));
-
         RealmResults<Hat> hats = dataProvider.getAllHats();
         Hat currentHat = dataProvider.getCurrentHat();
 
-        hatsAdapter = new HatsAdapter(hats, currentHat);
+        hatsAdapter = new HatsAdapter(hats, currentHat, this, getActivity());
         hatsList.setAdapter(hatsAdapter);
 
-        hatsList.addItemDecoration(new DividerDecoration(getDividerColor()));
-
-        if (hats != null && hats.size() > 0) {
-            switcher.showNext();
-        }
+        //hatsList.addItemDecoration(new DividerDecoration(getDividerColor()));
 
         return layout;
     }
@@ -114,19 +97,19 @@ public class ManageHatsFragment extends Fragment {
     }
 
     @Override public void onDestroyView() {
-        super.onDestroyView();
         ButterKnife.unbind(this);
+        super.onDestroyView();
     }
 
     @OnClick(R.id.add_hat) public void showAddHatDialog() {
-        new AddHatDialogFragment().show(getFragmentManager(), "addHatDialog");
+        new AddHatDialogFragment().show(getFragmentManager(), TAG_ADD_HAT_DIALOG);
     }
 
     @Override public void onResume() {
         super.onResume();
         realm.addChangeListener(listener);
 
-        hatsAdapter.currentHat = dataProvider.getCurrentHat();
+        hatsAdapter.setCurrentHat(dataProvider.getCurrentHat());
         hatsAdapter.notifyDataSetChanged();
     }
 
@@ -166,7 +149,7 @@ public class ManageHatsFragment extends Fragment {
     }
 
     public void switchHat(@NonNull final Hat hat) {
-        if (hat.equals(hatsAdapter.currentHat)) {
+        if (hat.equals(hatsAdapter.getCurrentHat())) {
             removeHat(hat);
         } else {
             putOnHat(hat);
@@ -243,117 +226,4 @@ public class ManageHatsFragment extends Fragment {
         void saveWithSnackbar(String name);
     }
 
-    public static class AddHatDialogFragment extends DialogFragment {
-
-        @Bind(R.id.hat_name_layout) TextInputLayout til;
-        @Bind(R.id.field_hat_name) EditText hatName;
-
-        @Override @NonNull @SuppressLint("InflateParams")
-        public Dialog onCreateDialog(Bundle state) {
-            final LinearLayout layout = (LinearLayout) LayoutInflater.from(getContext())
-                    .inflate(R.layout.dialog_add_hat, null);
-            ButterKnife.bind(this, layout);
-
-            til.setHint(getString(R.string.hat_name));
-
-            hatName.clearFocus();
-
-            return new AlertDialog.Builder(getContext(), R.style.AppDialogTheme)
-                    .setTitle(R.string.dialog_add_hat_instructions)
-                    .setView(layout)
-                    .setPositiveButton(R.string.save_caps, new DialogInterface.OnClickListener() {
-                        @Override public void onClick(DialogInterface dialog, int which) {
-                            final String name = hatName.getText().toString();
-
-                            if (StringUtils.isBlank(name)) {
-                                Toast.makeText(getContext(), R.string.empty_hat_name_warning,
-                                        Toast.LENGTH_SHORT).show();
-                            } else {
-                                ((Callbacks) getActivity()).saveWithSnackbar(name);
-                            }
-                        }
-                    })
-                    .setNegativeButton(R.string.cancel_caps, null)
-                    .show();
-        }
-    }
-
-    public static class DividerDecoration extends RecyclerView.ItemDecoration {
-
-        private final Paint paint;
-
-        public DividerDecoration(@ColorInt int dividerColor) {
-            paint = new Paint();
-            paint.setColor(dividerColor);
-            paint.setStyle(Paint.Style.FILL);
-        }
-
-        @Override public void onDraw(Canvas c, RecyclerView parent, RecyclerView.State state) {
-
-            RecyclerView.LayoutManager lm = parent.getLayoutManager();
-
-            for (int i = 0; i < lm.getChildCount(); i++) {
-                View child = lm.getChildAt(i);
-
-                c.drawLine(lm.getDecoratedLeft(child), lm.getDecoratedBottom(child),
-                        lm.getDecoratedRight(child), lm.getDecoratedBottom(child), paint);
-            }
-        }
-    }
-
-    public class HatsAdapter extends RecyclerView.Adapter<HatsHolder> {
-
-        @Nullable Hat currentHat;
-        RealmResults<Hat> hats;
-
-        public HatsAdapter(RealmResults<Hat> hats, @Nullable Hat currentHat) {
-            this.hats = hats;
-            this.currentHat = currentHat;
-        }
-
-        @Override
-        public HatsHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            return new HatsHolder(LayoutInflater.from(parent.getContext())
-                    .inflate(R.layout.view_hat_card, parent, false));
-        }
-
-        @Override public void onBindViewHolder(HatsHolder holder, int position) {
-            holder.name.setText(hats.get(position).getName());
-            holder.hat = (hats.get(position));
-
-            holder.currentIndicator.setDisplayedChild((
-                    currentHat != null && currentHat.equals(holder.hat)) ?
-                    holder.currentIndex : holder.otherIndex);
-        }
-
-        @Override public int getItemCount() {
-            return hats != null ? hats.size() : 0;
-        }
-    }
-
-    public class HatsHolder extends RecyclerView.ViewHolder {
-        @NonNull final public View button;
-        @Nullable public Hat hat;
-        public int currentIndex;
-        public int otherIndex;
-        @Bind(R.id.hat_name) TextView name;
-        @Bind(R.id.current_indicator) ViewSwitcher currentIndicator;
-
-        public HatsHolder(@NonNull View itemView) {
-            super(itemView);
-            ButterKnife.bind(this, itemView);
-            button = itemView;
-
-            currentIndex = currentIndicator.indexOfChild(currentIndicator.findViewById(R.id.current));
-            otherIndex = currentIndicator.indexOfChild(currentIndicator.findViewById(R.id.other));
-
-            button.setOnClickListener(new View.OnClickListener() {
-                @Override public void onClick(View v) {
-                    if (hat != null) {
-                        switchHat(hat);
-                    }
-                }
-            });
-        }
-    }
 }
