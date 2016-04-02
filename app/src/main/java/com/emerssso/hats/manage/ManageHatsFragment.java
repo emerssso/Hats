@@ -158,6 +158,7 @@ public class ManageHatsFragment extends Fragment implements HatsHolder.HatSwitch
 
     private void removeHat(@NonNull Hat hat) {
         final long wearMillis = System.currentTimeMillis();
+        final Context context = getContext().getApplicationContext();
 
         Snackbar snackbar = Snackbar.make(layout,
                 getContext().getString(R.string.removing_hat, hat.getName()),
@@ -174,11 +175,10 @@ public class ManageHatsFragment extends Fragment implements HatsHolder.HatSwitch
                 super.onDismissed(snackbar, event);
 
                 if (event != Snackbar.Callback.DISMISS_EVENT_ACTION) {
-                    //TODO: deal with case where callback is called after fragment is detached
-                    Intent intent = new Intent(getContext(), StartWearingHatIntentService.class);
+                    Intent intent = new Intent(context, StartWearingHatIntentService.class);
                     intent.putExtra(HatsIntents.EXTRA_HAT_NAME, Hat.NO_HAT_NAME);
                     intent.putExtra(HatsIntents.EXTRA_START_MILLIS, wearMillis);
-                    getActivity().startService(intent);
+                    context.startService(intent);
 
                     Log.d(TAG, "clearing current hat");
                 } else {
@@ -191,6 +191,7 @@ public class ManageHatsFragment extends Fragment implements HatsHolder.HatSwitch
 
     public void putOnHat(@NonNull final Hat hat) {
         final long wearMillis = System.currentTimeMillis();
+        final Context context = getContext().getApplicationContext();
 
         Snackbar snackbar = Snackbar.make(layout,
                 getContext().getString(R.string.putting_on_hat, hat.getName()),
@@ -207,11 +208,10 @@ public class ManageHatsFragment extends Fragment implements HatsHolder.HatSwitch
                 super.onDismissed(snackbar, event);
 
                 if (event != Snackbar.Callback.DISMISS_EVENT_ACTION) {
-                    //TODO: deal with case where callback is called after fragment is detached
-                    Intent intent = new Intent(getContext(), StartWearingHatIntentService.class);
+                    Intent intent = new Intent(context, StartWearingHatIntentService.class);
                     intent.putExtra(HatsIntents.EXTRA_HAT_NAME, hat.getName());
                     intent.putExtra(HatsIntents.EXTRA_START_MILLIS, wearMillis);
-                    getActivity().startService(intent);
+                    context.startService(intent);
 
                     Log.d(TAG, "put on " + hat.getName() + " hat");
                 } else {

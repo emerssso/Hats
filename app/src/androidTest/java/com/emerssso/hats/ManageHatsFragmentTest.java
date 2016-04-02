@@ -1,13 +1,15 @@
 package com.emerssso.hats;
 
+import android.support.annotation.NonNull;
 import android.support.test.espresso.PerformException;
 import android.support.test.espresso.UiController;
 import android.support.test.espresso.ViewAction;
+import android.support.test.espresso.ViewAssertion;
 import android.support.test.espresso.util.HumanReadables;
 import android.support.test.espresso.util.TreeIterables;
 import android.support.test.rule.ActivityTestRule;
 import android.support.test.runner.AndroidJUnit4;
-import android.test.suitebuilder.annotation.SmallTest;
+import android.test.suitebuilder.annotation.MediumTest;
 import android.view.View;
 
 import org.hamcrest.Matcher;
@@ -24,16 +26,21 @@ import static android.support.test.espresso.action.ViewActions.typeText;
 import static android.support.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static android.support.test.espresso.assertion.ViewAssertions.matches;
 import static android.support.test.espresso.matcher.ViewMatchers.hasDescendant;
+import static android.support.test.espresso.matcher.ViewMatchers.hasSibling;
 import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static android.support.test.espresso.matcher.ViewMatchers.isRoot;
+import static android.support.test.espresso.matcher.ViewMatchers.withChild;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
+import static org.hamcrest.Matchers.allOf;
 
 @RunWith(AndroidJUnit4.class)
-@SmallTest
+@MediumTest
 public class ManageHatsFragmentTest {
 
     public static final String HAT_NAME_1 = "Hat1";
+    private static final String HAT_NAME_2 = "Hat2";
+
     @Rule
     public ActivityTestRule<MainActivity> mActivityRule = new ActivityTestRule<>(MainActivity.class);
 
@@ -81,8 +88,31 @@ public class ManageHatsFragmentTest {
         };
     }
 
+    @NonNull public static ViewAssertion isSelected(boolean selected) {
+        return matches(hasSibling(allOf(withChild(withId(selected ? R.id.current : R.id.other)), isDisplayed())));
+    }
+
+    public static void clickSelectsHat(String hatName) {
+        onView(withText(hatName))
+                .check(matches(isDisplayed()))
+                .perform(click())
+                .check(isSelected(true));
+    }
+
     @Test
     public void testShouldAddHatToList() throws Exception {
+        addHatWithName(HAT_NAME_1);
+        addHatWithName(HAT_NAME_2);
+
+        clickSelectsHat(HAT_NAME_1);
+        clickSelectsHat(HAT_NAME_2);
+
+        onView(withText(HAT_NAME_2))
+                .perform(click())
+                .check(isSelected(false));
+    }
+
+    public void addHatWithName(String hatName) {
         onView(withId(R.id.add_hat))
                 .check(matches(isDisplayed()))
                 .perform(click());
@@ -92,7 +122,7 @@ public class ManageHatsFragmentTest {
 
         onView(withId(R.id.field_hat_name))
                 .check(matches(isDisplayed()))
-                .perform(typeText(HAT_NAME_1));
+                .perform(typeText(hatName));
 
         onView(withText(R.string.save_caps))
                 .check(matches(isDisplayed()))
@@ -101,10 +131,10 @@ public class ManageHatsFragmentTest {
         onView(withText(R.string.dialog_add_hat_instructions))
                 .check(doesNotExist());
 
-        onView(isRoot()).perform(waitText(HAT_NAME_1, TimeUnit.SECONDS.toMillis(5)));
+        onView(isRoot()).perform(waitText(hatName, TimeUnit.SECONDS.toMillis(5)));
 
         onView(withId(R.id.hats_list))
                 .check(matches(isDisplayed()))
-                .check(matches(hasDescendant(withText(HAT_NAME_1))));
+                .check(matches(hasDescendant(withText(hatName))));
     }
 }

@@ -14,7 +14,6 @@ import static android.support.test.espresso.assertion.ViewAssertions.matches;
 import static android.support.test.espresso.matcher.ViewMatchers.hasDescendant;
 import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static android.support.test.espresso.matcher.ViewMatchers.isSelected;
-import static android.support.test.espresso.matcher.ViewMatchers.withChild;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
 
@@ -41,7 +40,7 @@ public class MainActivityTest {
                 .check(matches(isSelected()));
 
         onView(withId(R.id.view_pager))
-                .check(matches(hasDescendant(withChild(withId(R.id.add_hat)))))
+                .check(matches(hasDescendant(withId(R.id.add_hat))))
                 .perform(swipeLeft())
                 .check(matches(hasDescendant(withText(R.string.coming_soon))));
 
