@@ -1,6 +1,7 @@
 package com.emerssso.hats.dagger;
 
 import com.emerssso.hats.AddHatIntentService;
+import com.emerssso.hats.HatHistoryFragment;
 import com.emerssso.hats.MainActivity;
 import com.emerssso.hats.RemoveHatDataIntentService;
 import com.emerssso.hats.StartWearingHatIntentService;
@@ -22,4 +23,6 @@ public interface ApplicationComponent {
     void inject(RemoveHatDataIntentService removeHatDataIntentService);
 
     void inject(StartWearingHatIntentService startWearingHatIntentService);
+
+    void inject(HatHistoryFragment hatHistoryFragment);
 }

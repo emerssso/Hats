@@ -16,6 +16,4 @@ public class HatHistoryFragment extends Fragment {
                                        @Nullable Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_history, container, false);
     }
-
-
 }

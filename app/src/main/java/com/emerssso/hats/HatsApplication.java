@@ -6,6 +6,7 @@ import android.support.annotation.NonNull;
 import com.emerssso.hats.dagger.ApplicationComponent;
 import com.emerssso.hats.dagger.ApplicationModule;
 import com.emerssso.hats.dagger.DaggerApplicationComponent;
+import com.jakewharton.threetenabp.AndroidThreeTen;
 
 import io.realm.Realm;
 import io.realm.RealmConfiguration;
@@ -19,6 +20,8 @@ public class HatsApplication extends Application {
 
     @Override public void onCreate() {
         super.onCreate();
+        AndroidThreeTen.init(this);
+
         Realm.setDefaultConfiguration(
                 new RealmConfiguration.Builder(this).name("hats.realm").build());
 
