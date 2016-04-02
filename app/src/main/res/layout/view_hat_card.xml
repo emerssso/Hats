@@ -5,12 +5,13 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:gravity="center_vertical"
-    android:orientation="vertical">
+    android:orientation="horizontal">
 
     <ViewSwitcher
         android:id="@+id/current_indicator"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/card_content_margin">
 
         <ImageView
             android:id="@+id/current"
@@ -30,17 +31,7 @@
         style="@style/TextAppearance.AppCompat.Headline"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="left"
-        android:layout_marginBottom="@dimen/list_item_margin_bottom"
-        android:layout_marginLeft="@dimen/list_item_margin"
-        android:layout_marginRight="@dimen/list_item_margin"
-        android:layout_marginTop="@dimen/list_item_margin"
-        android:gravity="center_vertical"
-        android:text="sample"/>
-
-    <View
-        android:id="@+id/divider"
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:background="@color/divider"/>
+        android:layout_gravity="left|center_vertical"
+        android:layout_margin="@dimen/list_item_margin"
+        android:gravity="center_vertical"/>
 </LinearLayout>

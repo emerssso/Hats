@@ -5,7 +5,10 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Canvas;
+import android.graphics.Paint;
 import android.os.Bundle;
+import android.support.annotation.ColorInt;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.CoordinatorLayout;
@@ -86,11 +89,28 @@ public class ManageHatsFragment extends Fragment {
         hatsAdapter = new HatsAdapter(hats, currentHat);
         hatsList.setAdapter(hatsAdapter);
 
+        hatsList.addItemDecoration(new DividerDecoration(getDividerColor()));
+
         if (hats != null && hats.size() > 0) {
             switcher.showNext();
         }
 
         return layout;
+    }
+
+    /**
+     * @return The color to use for the divider (using the appropriate API for different
+     * android versions
+     */
+    @ColorInt private int getDividerColor() {
+        int dividerColor;
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
+            dividerColor = getResources().getColor(R.color.divider, getActivity().getTheme());
+        } else {
+            //noinspection deprecation we're using this in the context where it is not deprecated
+            dividerColor = getResources().getColor(R.color.divider);
+        }
+        return dividerColor;
     }
 
     @Override public void onDestroyView() {
@@ -258,6 +278,29 @@ public class ManageHatsFragment extends Fragment {
         }
     }
 
+    public static class DividerDecoration extends RecyclerView.ItemDecoration {
+
+        private final Paint paint;
+
+        public DividerDecoration(@ColorInt int dividerColor) {
+            paint = new Paint();
+            paint.setColor(dividerColor);
+            paint.setStyle(Paint.Style.FILL);
+        }
+
+        @Override public void onDraw(Canvas c, RecyclerView parent, RecyclerView.State state) {
+
+            RecyclerView.LayoutManager lm = parent.getLayoutManager();
+
+            for (int i = 0; i < lm.getChildCount(); i++) {
+                View child = lm.getChildAt(i);
+
+                c.drawLine(lm.getDecoratedLeft(child), lm.getDecoratedBottom(child),
+                        lm.getDecoratedRight(child), lm.getDecoratedBottom(child), paint);
+            }
+        }
+    }
+
     public class HatsAdapter extends RecyclerView.Adapter<HatsHolder> {
 
         @Nullable Hat currentHat;
@@ -281,8 +324,6 @@ public class ManageHatsFragment extends Fragment {
             holder.currentIndicator.setDisplayedChild((
                     currentHat != null && currentHat.equals(holder.hat)) ?
                     holder.currentIndex : holder.otherIndex);
-
-            //holder.stroke.setVisibility(position == hats.size() - 1 ? View.GONE : View.VISIBLE);
         }
 
         @Override public int getItemCount() {
@@ -296,7 +337,6 @@ public class ManageHatsFragment extends Fragment {
         public int currentIndex;
         public int otherIndex;
         @Bind(R.id.hat_name) TextView name;
-        @Bind(R.id.divider) View stroke;
         @Bind(R.id.current_indicator) ViewSwitcher currentIndicator;
 
         public HatsHolder(@NonNull View itemView) {
